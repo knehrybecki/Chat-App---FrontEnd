@@ -1,0 +1,18 @@
+button,input {
+    border: none;
+    outline: none;
+    background: none;
+    font: inherit;
+    cursor: pointer;
+    color: inherit;
+}
+
+a {
+    text-decoration-line: none;
+    color: inherit;
+}
+
+ li {
+    list-style: none;
+}
+
