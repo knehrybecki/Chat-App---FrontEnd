@@ -24,10 +24,10 @@
         justify-content: center
         font-weight: 800
         letter-spacing: 1px
-        background-color: #030303
+        background-color: $black
         border-top-left-radius: 5px
         border-top-right-radius: 5px
-        color: #fff
+        color: $white
         height: 40px
         width: 100%
 
@@ -50,7 +50,7 @@
     justify-content: space-between
     align-items: center
     flex-direction: column
-    background-color: #828282
+    background-color: $JoinColor
     width: 250px
     height: 260px
 
@@ -60,8 +60,8 @@
         justify-content: center
         font-weight: 800
         letter-spacing: 1px
-        background-color: #030303
-        color: #fff
+        background-color: $black
+        color: $white
         height: 40px
         width: 100%
 
@@ -74,25 +74,25 @@
         align-items: center
 
     &__button
-        background-color: #fff
+        background-color: $white
         border-radius: 5px
         width: 80px
         height: 22px
         margin-bottom: 10px
 
     &__button:hover
-        background-color: #6e6e6e
+        background-color: $buttonHoverJoin
 
 .input--label
     width: 85%
 
 .input--name
-    background-color: #fff
+    background-color: $white
     text-align: center
     height: 30px
 
 .input--room
-    background-color: #fff
+    background-color: $white
     text-align: center
     height: 30px
    
@@ -102,8 +102,8 @@
     display: flex
     justify-content: center
     align-items: center
-    background-color: #000000
-    color: #fff
+    background-color: $black
+    color: $white
     font-size: 18px
 
 .message
@@ -128,16 +128,16 @@
     max-width: 200px
     height: 30px
     border-radius: 10px
-    background-color: #8b89ff
+    background-color: $messageUser
     font-size: 14px
 
 .message--user.myMessage
     align-self: flex-end
-    background-color: #4d81f0
+    background-color: $myMessage
 
 .message--user > span
     position: absolute
-    color: #fff
+    color: $white
     font-size: 10px
     bottom: 2px
     left: 5px
@@ -155,7 +155,7 @@
     width: 300px
     height: 35px
     border-radius: 10px
-    background-color: #ebebeb
+    background-color: $inputText
     padding-left: 10px
     padding-right: 50px
 
@@ -166,14 +166,14 @@
     width: 25px
     height: 25px
     border-radius: 50%
-    background: #adadad
+    background: $inputButton
 
 .input--button:hover
-    background-color: #888888
+    background-color: $inputButtonHover
 
 .fa-image
     font-size: 25px
-    color: #084aff
+    color: $imageIcon
     position: relative
     right: 3px
     top: 5px
