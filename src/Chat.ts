@@ -1,5 +1,6 @@
+import { PersonSendImage, PersonSendMessage } from './types'
 import { socket } from './main'
-import { format } from 'date-fns';
+import { format } from 'date-fns'
 import $ from 'jquery'
 
 export const createChatMessage = () => {
@@ -12,8 +13,8 @@ export const createChatMessage = () => {
 
     socket.on('image', image => {
         const img = getImage(image)
-        console.log(image)
-        if (socket.id === image.userID) {
+
+        if (socket.id === image.src.clientId) {
             img.addClass('myMessage')
         }
     })
@@ -23,7 +24,7 @@ export const createChatMessage = () => {
 
         const sendMsg = createSendMessage(message)
 
-        if (socket.id === message.clientID) {
+        if (socket.id === message.clientId) {
             sendMsg.addClass('myMessage')
         }
 
@@ -42,7 +43,7 @@ export const createChatMessage = () => {
         socket.emit('chatMessage', {
             message: sendMessage.val(),
             userName: $('.input--name').val(),
-            clientID: socket.id
+            clientId: socket.id
         })
 
         sendMessage.val('')
@@ -60,26 +61,26 @@ export const createChatMessage = () => {
     sendImage()
 }
 
-export const createSendMessage = (message: { message: string; userName: string; clientID: string }) => {
+export const createSendMessage = (message: PersonSendMessage) => {
     const textUser = $('<p>', {
-        class: `message--user `,
+        class: 'message--user',
         text: message.message,
         name: message.userName,
-        'client-id': message.clientID
+        'client-id': message.clientId
     }).appendTo($('.message'))
 
     $('<span>', {
-        text: format(new Date(), "HH:mm")
+        text: format(new Date(), 'HH:mm')
     }).appendTo(textUser)
 
     return textUser
 }
 
-const getImage = (image: { src: { src: string } }) => {
+const getImage = (image: PersonSendImage) => {
     const img = $('<img>', {
         class: 'image',
-        userID: socket.id,
-        src: image.src.src,
+        clientid: image.src.clientId,
+        src: image.src.result,
         alt: 'img'
     }).appendTo($('.message'))
 
@@ -103,9 +104,11 @@ const sendImage = () => {
                 reader.readAsDataURL(file)
 
                 reader.onload = (() => {
-                    socket.emit("send-img", {
-                        src: reader.result,
-                        userID: socket.id
+                    const result = reader.result
+                    const clientId = socket.id
+                    socket.emit('send-img', {
+                        result,
+                        clientId
                     })
                 })
 
@@ -114,8 +117,9 @@ const sendImage = () => {
         })
     })
 
-    document.addEventListener('paste', (event) => {
+    document.addEventListener('paste', event => {
         const target = event.clipboardData?.files
+
         if (target !== undefined) {
             const reader = new FileReader()
 
@@ -124,9 +128,12 @@ const sendImage = () => {
             reader.readAsDataURL(file)
 
             reader.onload = (() => {
+                const result = reader.result
+                const clientId = socket.id
+
                 socket.emit('send-img', {
-                    src: reader.result,
-                    userID: socket.id
+                    result,
+                    clientId
                 })
             })
         }

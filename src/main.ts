@@ -1,7 +1,7 @@
 import './style/style.sass'
 import './style/reset.css'
-import { io } from "socket.io-client";
-import { createJoinUserToChat } from './login';
+import { createJoinUserToChat } from './login'
+import { io } from "socket.io-client"
 import $ from 'jquery'
 
 export const socket = io('http://localhost:3000')

@@ -5,12 +5,12 @@ import $ from 'jquery'
 export const createJoinUserToChat = () => {
     $('.join__button').click(event => {
         const userName = $('.input--name').val()
-
         const roomName = $('.input--room').val()
 
         if (userName === '' && roomName === '') {
             return
         }
+        
         event.preventDefault()
 
         socket.emit('userData', {
