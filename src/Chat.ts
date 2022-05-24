@@ -1,5 +1,5 @@
 import { socket } from './main'
-import moment from 'moment'
+import { format } from 'date-fns';
 import $ from 'jquery'
 
 export const createChatMessage = () => {
@@ -11,8 +11,8 @@ export const createChatMessage = () => {
     })
 
     socket.on('image', image => {
-       const img =  getImage(image)
-
+        const img = getImage(image)
+        console.log(image)
         if (socket.id === image.userID) {
             img.addClass('myMessage')
         }
@@ -30,37 +30,37 @@ export const createChatMessage = () => {
         windowMessage.scrollTop(windowMessage?.get(0)?.scrollHeight!)
     })
 
-    const SendMessage = (event: any) => {
+    const sendMessage = (event: JQuery.ClickEvent | JQuery.KeyPressEvent) => {
         if ($('.input--text').val() === '') {
             return
         }
 
         event.preventDefault()
 
-        const SendMessage = $('.input--text')
+        const sendMessage = $('.input--text')
 
         socket.emit('chatMessage', {
-            message: SendMessage.val(),
+            message: sendMessage.val(),
             userName: $('.input--name').val(),
             clientID: socket.id
         })
 
-        SendMessage.val('')
-        SendMessage.focus()
+        sendMessage.val('')
+        sendMessage.focus()
     }
 
-    $('.input--button').click(SendMessage)
+    $('.input--button').click(sendMessage)
 
     $('.input--text').keypress(event => {
         if (event.which === 13) {
-            SendMessage(event)
+            sendMessage(event)
         }
     })
 
     sendImage()
 }
 
-export const createSendMessage = (message: any) => {
+export const createSendMessage = (message: { message: string; userName: string; clientID: string }) => {
     const textUser = $('<p>', {
         class: `message--user `,
         text: message.message,
@@ -69,62 +69,67 @@ export const createSendMessage = (message: any) => {
     }).appendTo($('.message'))
 
     $('<span>', {
-        text: moment().format('h:mm')
+        text: format(new Date(), "HH:mm")
     }).appendTo(textUser)
 
     return textUser
 }
 
-const getImage = (image: any) => {
-    const img  = $('<img>', {
-          class: 'image',
-          userID: socket.id,
-          src: image.src.src,
-          alt: 'img'
-      }).appendTo($('.message'))
+const getImage = (image: { src: { src: string } }) => {
+    const img = $('<img>', {
+        class: 'image',
+        userID: socket.id,
+        src: image.src.src,
+        alt: 'img'
+    }).appendTo($('.message'))
 
-      return img
-  }
+    return img
+}
 
 const sendImage = () => {
     $('.fa-image').click(() => {
-        $('.input--image').click()
+        const imageInput = $('.input--image')
 
-        document.addEventListener('keypress', event => {
-            if (event.which === 13) {
-                const ourFile = $('.input--image')[0].files
+        imageInput.click()
 
-                if (ourFile.length > 0) {
-                    const reader = new FileReader()
+        $('.input--image').change((event: JQuery.ChangeEvent) => {
+            const target = $(event.target).get(0).files
 
-                    reader.readAsDataURL(ourFile[0])
+            if (target.length > 0) {
+                const reader = new FileReader()
 
-                    reader.onload = (() => {
-                        socket.emit("send-img", {
-                           src: reader.result,
-                           userID: socket.id
-                        })
+                const [file] = target
+
+                reader.readAsDataURL(file)
+
+                reader.onload = (() => {
+                    socket.emit("send-img", {
+                        src: reader.result,
+                        userID: socket.id
                     })
-                }
+                })
+
                 $('.input--image').val('')
             }
         })
     })
 
-    document.addEventListener('paste', event => {
-        if (event.clipboardData?.files?.length! > 0) {
-            const ourFile = event.clipboardData?.files[0]!
-
+    document.addEventListener('paste', (event) => {
+        const target = event.clipboardData?.files
+        if (target !== undefined) {
             const reader = new FileReader()
 
-            reader.readAsDataURL(ourFile)
+            const [file] = target
+
+            reader.readAsDataURL(file)
 
             reader.onload = (() => {
                 socket.emit('send-img', {
-                src: reader.result,
-                userID: socket.id
-             })
+                    src: reader.result,
+                    userID: socket.id
+                })
             })
         }
     })
 }
+

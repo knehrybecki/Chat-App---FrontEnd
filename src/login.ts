@@ -11,17 +11,19 @@ export const createJoinUserToChat = () => {
         if (userName === '' && roomName === '') {
             return
         }
-        
         event.preventDefault()
 
-        socket.emit('new-user', userName)
+        socket.emit('userData', {
+            userName,
+            roomName
+        })
 
-        socket.emit('room', roomName)
+        window.history.pushState('http://localhost:3001/', 'Title', `/${roomName}/${userName}`)
 
         $('.chat__join').hide()
         $('.chat__input').show()
         $('.chat__title').show()
-
+        
         createChatMessage()
     })
 }
