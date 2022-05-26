@@ -89,7 +89,7 @@ const getImage = (image: PersonSendImage) => {
 
 const sendImage = () => {
     $('.fa-image').click(() => {
-        const imageInput = $('.input--image')
+        const imageInput: JQuery<HTMLElement> = $('.input--image')
 
         imageInput.click()
 

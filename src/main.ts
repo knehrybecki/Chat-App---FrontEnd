@@ -1,5 +1,5 @@
 import $ from 'jquery'
-import { io } from "socket.io-client"
+import { io } from 'socket.io-client'
 import { createJoinUserToChat } from './login'
 import './style/reset.css'
 import './style/style.sass'
