@@ -1,27 +1,27 @@
-import { PersonSendImage, PersonSendMessage } from './types'
-import { socket } from './main'
 import { format } from 'date-fns'
 import $ from 'jquery'
+import { socket } from './main'
+import { PersonSendImage, PersonSendMessage } from './types'
 
 export const createChatMessage = () => {
-    socket.on('roomMessage', roomMsg => {
+    socket.on('roomMessage', (roomMessage: string) => {
+
         $('<p>', {
             class: 'message--room',
-            text: roomMsg
+            text: roomMessage
         }).appendTo($('.message'))
     })
 
-    socket.on('image', image => {
+    socket.on('image', (image: PersonSendImage) => {
         const img = getImage(image)
-
+  
         if (socket.id === image.src.clientId) {
             img.addClass('myMessage')
         }
     })
 
-    socket.on('message', message => {
+    socket.on('message', (message: PersonSendMessage) => {
         const windowMessage: JQuery<HTMLElement> = $('.message')
-
         const sendMsg = createSendMessage(message)
 
         if (socket.id === message.clientId) {

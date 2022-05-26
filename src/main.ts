@@ -1,8 +1,8 @@
-import './style/style.sass'
-import './style/reset.css'
-import { createJoinUserToChat } from './login'
-import { io } from "socket.io-client"
 import $ from 'jquery'
+import { io } from "socket.io-client"
+import { createJoinUserToChat } from './login'
+import './style/reset.css'
+import './style/style.sass'
 
 export const socket = io('http://localhost:3000')
 

@@ -4,7 +4,7 @@ export type PersonSendMessage = {
     clientId: string,
 }
 
-export type PersonSendImage= {
+export type PersonSendImage = {
     src: {
         result: string,
         clientId: string
