@@ -6,8 +6,9 @@ export const createJoinUserToChat = () => {
     $('.join__button').click(event => {
         const userName = $('.input--name').val()
         const roomName = $('.input--room').val()
+        const clientId = socket.id
 
-        if (userName === '' && roomName === '') {
+        if (userName === '' || roomName === '') {
             return
         }
         
@@ -15,7 +16,8 @@ export const createJoinUserToChat = () => {
 
         socket.emit('userData', {
             userName,
-            roomName
+            roomName,
+            clientId
         })
 
         window.history.pushState('http://localhost:3001/', 'Title', `/${roomName}/${userName}`)

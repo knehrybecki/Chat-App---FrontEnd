@@ -4,8 +4,9 @@ import { socket } from './main'
 import { PersonSendImage, PersonSendMessage } from './types'
 
 export const createChatMessage = () => {
-    socket.on('roomMessage', (roomMessage: string) => {
+    const windowMessage: JQuery<HTMLElement> = $('.message')
 
+    socket.on('roomMessage', (roomMessage: string) => {
         $('<p>', {
             class: 'message--room',
             text: roomMessage
@@ -18,16 +19,16 @@ export const createChatMessage = () => {
         if (socket.id === image.src.clientId) {
             img.addClass('myMessage')
         }
+        
+        windowMessage.scrollTop(windowMessage?.get(0)?.scrollHeight!)
     })
 
     socket.on('message', (message: PersonSendMessage) => {
-        const windowMessage: JQuery<HTMLElement> = $('.message')
         const sendMsg = createSendMessage(message)
 
         if (socket.id === message.clientId) {
             sendMsg.addClass('myMessage')
         }
-
         windowMessage.scrollTop(windowMessage?.get(0)?.scrollHeight!)
     })
 
@@ -122,7 +123,6 @@ const sendImage = () => {
 
         if (target !== undefined) {
             const reader = new FileReader()
-
             const [file] = target
 
             reader.readAsDataURL(file)
@@ -140,3 +140,7 @@ const sendImage = () => {
     })
 }
 
+
+window.addEventListener('DOMContentLoaded', () => {
+    window.history.pushState('http://localhost:3001/', 'Title', '/')
+})
