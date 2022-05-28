@@ -7,13 +7,13 @@ import './style/style.sass'
 export const socket = io('http://localhost:3000')
 
 const renderChat = () => {
-  const app: JQuery<HTMLElement> = $('.app')
+  const app = $('.app')
 
-  const appChat: JQuery<HTMLElement> = $('<div>', {
+  const appChat = $('<div>', {
     class: 'app__chat'
   }).appendTo(app)
 
-  const chat: JQuery<HTMLElement> = $('<div>', {
+  const chat = $('<div>', {
     class: 'chat'
   }).appendTo(appChat)
 
@@ -22,7 +22,7 @@ const renderChat = () => {
     text: 'Chat App'
   }).prependTo(chat).hide()
 
-  const chatMessage: JQuery<HTMLElement> = $('<div>', {
+  const chatMessage = $('<div>', {
     class: 'chat__message'
   }).appendTo(chat)
 
@@ -30,11 +30,11 @@ const renderChat = () => {
     class: 'message'
   }).appendTo(chatMessage)
 
-  const chatInput: JQuery<HTMLElement> = $('<div>', {
+  const chatInput = $('<div>', {
     class: 'chat__input'
   }).appendTo(chat).hide()
 
-  const input: JQuery<HTMLElement> = $('<div>', {
+  const input = $('<div>', {
     class: 'input'
   }).appendTo(chatInput)
 
@@ -64,11 +64,11 @@ const renderChat = () => {
 renderChat()
 
 export const renderLoginToChat = () => {
-  const chatLogin: JQuery<HTMLElement> = $('<div>', {
+  const chatLogin = $('<div>', {
     class: 'chat__join'
   }).prependTo($('.chat'))
 
-  const login: JQuery<HTMLElement> = $('<div>', {
+  const login = $('<div>', {
     class: 'join'
   }).appendTo(chatLogin)
 
@@ -81,7 +81,7 @@ export const renderLoginToChat = () => {
     class: 'join__input'
   }).appendTo(login)
 
-  const labelName: JQuery<HTMLElement> = $('<label>', {
+  const labelName = $('<label>', {
     class: 'input--label',
     text: 'User name'
   }).appendTo(loginInput)
@@ -92,7 +92,7 @@ export const renderLoginToChat = () => {
     placeholder: 'Enter name...',
   }).prop('required', true).appendTo(labelName)
 
-  const labelRoom: JQuery<HTMLElement> = $('<label>', {
+  const labelRoom = $('<label>', {
     class: 'input--label',
     text: 'Room Name'
   }).appendTo(loginInput)

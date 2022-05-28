@@ -3,11 +3,11 @@ import $ from 'jquery'
 import { socket } from './main'
 import { PersonSendImage, PersonSendMessage } from './types'
 
-const clientId: string = socket.id
+const clientId = socket.id
 
 export const createChatMessage = () => {
-    const windowMessage: JQuery<HTMLElement> = $('.message')
-    const inputText: JQuery<HTMLElement> = $('.input--text')
+    const windowMessage = $('.message')
+    const inputText = $('.input--text')
 
     socket.on('roomMessage', (roomMessage: string) => {
         $('<p>', {
@@ -17,7 +17,7 @@ export const createChatMessage = () => {
     })
 
     socket.on('image', (image: PersonSendImage) => {
-        const img: JQuery<HTMLElement> = getImage(image)
+        const img = getImage(image)
   
         if (clientId === image.src.clientId) {
             img.addClass('myMessage')
@@ -27,7 +27,7 @@ export const createChatMessage = () => {
     })
 
     socket.on('message', (message: PersonSendMessage) => {
-        const sendMsg: JQuery<HTMLElement> = createSendMessage(message)
+        const sendMsg = createSendMessage(message)
 
         if (clientId === message.clientId) {
             sendMsg.addClass('myMessage')
@@ -45,7 +45,7 @@ export const createChatMessage = () => {
         socket.emit('chatMessage', {
             message: inputText.val(),
             userName: $('.input--name').val(),
-            clientId: socket.id
+            clientId: clientId
         })
 
         inputText.val('')
@@ -64,7 +64,7 @@ export const createChatMessage = () => {
 }
 
 export const createSendMessage = (message: PersonSendMessage) => {
-    const textUser: JQuery<HTMLElement> = $('<p>', {
+    const textUser = $('<p>', {
         class: 'message--user',
         text: message.message,
         name: message.userName,
@@ -79,7 +79,7 @@ export const createSendMessage = (message: PersonSendMessage) => {
 }
 
 const getImage = (image: PersonSendImage) => {
-    const img: JQuery<HTMLElement> = $('<img>', {
+    const img = $('<img>', {
         class: 'image',
         clientid: image.src.clientId,
         src: image.src.result,
@@ -91,7 +91,7 @@ const getImage = (image: PersonSendImage) => {
 
 const sendImage = () => {
     $('.fa-image').click(() => {
-        const imageInput: JQuery<HTMLElement> = $('.input--image')
+        const imageInput = $('.input--image')
 
         imageInput.click()
 
@@ -99,14 +99,14 @@ const sendImage = () => {
             const target = $(event.target).get(0).files
 
             if (target.length > 0) {
-                const reader: FileReader = new FileReader()
+                const reader = new FileReader()
 
                 const [file] = target
 
                 reader.readAsDataURL(file)
 
                 reader.onload = (() => {
-                    const result: string | ArrayBuffer | null = reader.result
+                    const result = reader.result
 
                     socket.emit('send-img', {
                         result,
@@ -120,16 +120,16 @@ const sendImage = () => {
     })
 
     document.addEventListener('paste', (event: ClipboardEvent) => {
-        const target: FileList | undefined = event.clipboardData?.files
+        const target = event.clipboardData?.files
 
         if (target !== undefined) {
-            const reader: FileReader = new FileReader()
+            const reader = new FileReader()
             const [file] = target
 
             reader.readAsDataURL(file)
 
             reader.onload = (() => {
-                const result: string | ArrayBuffer | null = reader.result
+                const result = reader.result
 
                 socket.emit('send-img', {
                     result,
