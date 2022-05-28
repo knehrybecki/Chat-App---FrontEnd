@@ -8,7 +8,7 @@ export const createJoinUserToChat = () => {
         const roomName = $('.input--room').val()
         const clientId = socket.id
 
-        if (userName  === '' || roomName === '') {
+        if (userName === '' || roomName === '') {
             return
         }
         
