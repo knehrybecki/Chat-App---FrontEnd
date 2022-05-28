@@ -1,0 +1,189 @@
+.app
+    display: flex
+    justify-content: center
+    width: 100%
+    height: 600px
+    margin-top: 50px
+
+    &__chat
+        display: flex
+        flex-direction: column
+        align-items: center
+        height: 100%
+        width: 510px
+
+.chat
+    border: 2px solid
+    border-radius: 10px
+    width: 80%
+    height: 100%
+
+    &__title
+        display: flex
+        align-items: center
+        justify-content: center
+        font-weight: 800
+        letter-spacing: 1px
+        background-color: $black
+        border-top-left-radius: 5px
+        border-top-right-radius: 5px
+        color: $white
+        height: 40px
+        width: 100%
+
+    &__join
+        display: flex
+        justify-content: center
+        align-items: center
+        height: 100%
+        width: 100%
+
+    &__message
+        height: 84%
+
+    &__input
+        border-top: 2px solid
+        padding: 10px
+
+.join
+    display: flex
+    justify-content: space-between
+    align-items: center
+    flex-direction: column
+    background-color: $JoinColor
+    width: 250px
+    height: 260px
+
+    &__title
+        display: flex
+        align-items: center
+        justify-content: center
+        font-weight: 800
+        letter-spacing: 1px
+        background-color: $black
+        color: $white
+        height: 40px
+        width: 100%
+
+    &__input
+        height: 120px
+        margin-bottom: 10px
+        display: flex
+        flex-direction: column
+        justify-content: space-between
+        align-items: center
+
+    &__button
+        background-color: $white
+        border-radius: 5px
+        width: 80px
+        height: 22px
+        margin-bottom: 10px
+
+    &__button:hover
+        background-color: $buttonHoverJoin
+
+.input--label
+    width: 85%
+
+.input--name
+    background-color: $white
+    text-align: center
+    height: 30px
+
+.input--room
+    background-color: $white
+    text-align: center
+    height: 30px
+   
+.message--room
+    width: 100%
+    height: 30px
+    display: flex
+    justify-content: center
+    align-items: center
+    background-color: $black
+    color: $white
+    font-size: 18px
+
+.message
+    height: 100%
+    overflow: auto
+    position: relative
+    display: flex
+    flex-direction: column
+    align-items: flex-end
+
+.message > :first-child 
+    margin-top: auto
+
+.message--user
+    display: flex
+    align-self: flex-start
+    position: relative
+    padding: 10px 10px 20px 10px
+    margin: 10px
+    word-break: break-all
+    min-width: 15px
+    max-width: 200px
+    border-radius: 10px
+    background-color: $messageUser
+    font-size: 14px
+
+.message--user.myMessage
+    align-self: flex-end
+    background-color: $myMessage
+
+.message--user > span
+    position: absolute
+    color: $white
+    font-size: 10px
+    bottom: 2px
+    left: 5px
+
+.message--user.myMessage > span
+    left: auto
+    right: 5px
+
+.input
+    display: flex
+    justify-content: center
+    position: relative
+
+.input--text
+    width: 300px
+    height: 35px
+    border-radius: 10px
+    background-color: $inputText
+    padding-left: 10px
+    padding-right: 50px
+
+.input--button
+    position: absolute
+    right: 10px
+    bottom: 5px
+    width: 25px
+    height: 25px
+    border-radius: 50%
+    background: $inputButton
+
+.input--button:hover
+    background-color: $inputButtonHover
+
+.fa-image
+    font-size: 25px
+    color: $imageIcon
+    position: relative
+    right: 3px
+    top: 5px
+    cursor: pointer
+
+.image
+    display: flex
+    align-self: flex-start
+    max-width: 370px
+    padding: 10px
+
+.image.myMessage
+    align-self: flex-end
+    
