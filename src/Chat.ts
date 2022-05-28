@@ -3,8 +3,11 @@ import $ from 'jquery'
 import { socket } from './main'
 import { PersonSendImage, PersonSendMessage } from './types'
 
+const clientId: string = socket.id
+
 export const createChatMessage = () => {
     const windowMessage: JQuery<HTMLElement> = $('.message')
+    const inputText: JQuery<HTMLElement> = $('.input--text')
 
     socket.on('roomMessage', (roomMessage: string) => {
         $('<p>', {
@@ -14,9 +17,9 @@ export const createChatMessage = () => {
     })
 
     socket.on('image', (image: PersonSendImage) => {
-        const img = getImage(image)
+        const img: JQuery<HTMLElement> = getImage(image)
   
-        if (socket.id === image.src.clientId) {
+        if (clientId === image.src.clientId) {
             img.addClass('myMessage')
         }
         
@@ -24,36 +27,34 @@ export const createChatMessage = () => {
     })
 
     socket.on('message', (message: PersonSendMessage) => {
-        const sendMsg = createSendMessage(message)
+        const sendMsg: JQuery<HTMLElement> = createSendMessage(message)
 
-        if (socket.id === message.clientId) {
+        if (clientId === message.clientId) {
             sendMsg.addClass('myMessage')
         }
         windowMessage.scrollTop(windowMessage?.get(0)?.scrollHeight!)
     })
 
     const sendMessage = (event: JQuery.ClickEvent | JQuery.KeyPressEvent) => {
-        if ($('.input--text').val() === '') {
+        if (inputText.val() === '') {
             return
         }
 
         event.preventDefault()
-
-        const sendMessage = $('.input--text')
-
+       
         socket.emit('chatMessage', {
-            message: sendMessage.val(),
+            message: inputText.val(),
             userName: $('.input--name').val(),
             clientId: socket.id
         })
 
-        sendMessage.val('')
-        sendMessage.focus()
+        inputText.val('')
+        inputText.focus()
     }
 
     $('.input--button').click(sendMessage)
 
-    $('.input--text').keypress(event => {
+        inputText.keypress(event => {
         if (event.which === 13) {
             sendMessage(event)
         }
@@ -63,7 +64,7 @@ export const createChatMessage = () => {
 }
 
 export const createSendMessage = (message: PersonSendMessage) => {
-    const textUser = $('<p>', {
+    const textUser: JQuery<HTMLElement> = $('<p>', {
         class: 'message--user',
         text: message.message,
         name: message.userName,
@@ -78,7 +79,7 @@ export const createSendMessage = (message: PersonSendMessage) => {
 }
 
 const getImage = (image: PersonSendImage) => {
-    const img = $('<img>', {
+    const img: JQuery<HTMLElement> = $('<img>', {
         class: 'image',
         clientid: image.src.clientId,
         src: image.src.result,
@@ -94,42 +95,41 @@ const sendImage = () => {
 
         imageInput.click()
 
-        $('.input--image').change((event: JQuery.ChangeEvent) => {
+        imageInput.change((event: JQuery.ChangeEvent) => {
             const target = $(event.target).get(0).files
 
             if (target.length > 0) {
-                const reader = new FileReader()
+                const reader: FileReader = new FileReader()
 
                 const [file] = target
 
                 reader.readAsDataURL(file)
 
                 reader.onload = (() => {
-                    const result = reader.result
-                    const clientId = socket.id
+                    const result: string | ArrayBuffer | null = reader.result
+
                     socket.emit('send-img', {
                         result,
                         clientId
                     })
                 })
 
-                $('.input--image').val('')
+                imageInput.val('')
             }
         })
     })
 
-    document.addEventListener('paste', event => {
-        const target = event.clipboardData?.files
+    document.addEventListener('paste', (event: ClipboardEvent) => {
+        const target: FileList | undefined = event.clipboardData?.files
 
         if (target !== undefined) {
-            const reader = new FileReader()
+            const reader: FileReader = new FileReader()
             const [file] = target
 
             reader.readAsDataURL(file)
 
             reader.onload = (() => {
-                const result = reader.result
-                const clientId = socket.id
+                const result: string | ArrayBuffer | null = reader.result
 
                 socket.emit('send-img', {
                     result,
