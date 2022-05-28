@@ -5,6 +5,7 @@ import './style/reset.css'
 import './style/style.sass'
 
 export const socket = io('http://localhost:3000')
+export const clientId = socket.id
 
 const renderChat = () => {
   const app = $('.app')

@@ -1,9 +1,8 @@
 import { format } from 'date-fns'
 import $ from 'jquery'
-import { socket } from './main'
+import { clientId, socket } from './main'
 import { PersonSendImage, PersonSendMessage } from './types'
 
-const clientId = socket.id
 
 export const createChatMessage = () => {
     const windowMessage = $('.message')

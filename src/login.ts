@@ -4,11 +4,11 @@ import { socket } from './main'
 
 export const createJoinUserToChat = () => {
     $('.join__button').click(event => {
-        const userName = $('.input--name')
-        const roomName = $('.input--room')
+        const userName = $('.input--name').val()
+        const roomName = $('.input--room').val()
         const clientId = socket.id
 
-        if (userName.val() === '' || roomName.val() === '') {
+        if (userName  === '' || roomName === '') {
             return
         }
         
