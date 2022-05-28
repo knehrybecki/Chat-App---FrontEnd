@@ -4,7 +4,8 @@ import { socket } from './main'
 import { PersonSendImage, PersonSendMessage } from './types'
 
 export const createChatMessage = () => {
-    const windowMessage: JQuery<HTMLElement> = $('.message')
+    const windowMessage = $('.message')
+    const inputText = $('.input--text')
 
     socket.on('roomMessage', (roomMessage: string) => {
         $('<p>', {
@@ -33,27 +34,25 @@ export const createChatMessage = () => {
     })
 
     const sendMessage = (event: JQuery.ClickEvent | JQuery.KeyPressEvent) => {
-        if ($('.input--text').val() === '') {
+        if (inputText.val() === '') {
             return
         }
 
         event.preventDefault()
-
-        const sendMessage = $('.input--text')
-
+       
         socket.emit('chatMessage', {
-            message: sendMessage.val(),
+            message: inputText.val(),
             userName: $('.input--name').val(),
             clientId: socket.id
         })
 
-        sendMessage.val('')
-        sendMessage.focus()
+        inputText.val('')
+        inputText.focus()
     }
 
     $('.input--button').click(sendMessage)
 
-    $('.input--text').keypress(event => {
+        inputText.keypress(event => {
         if (event.which === 13) {
             sendMessage(event)
         }
@@ -90,11 +89,11 @@ const getImage = (image: PersonSendImage) => {
 
 const sendImage = () => {
     $('.fa-image').click(() => {
-        const imageInput: JQuery<HTMLElement> = $('.input--image')
+        const imageInput = $('.input--image')
 
         imageInput.click()
 
-        $('.input--image').change((event: JQuery.ChangeEvent) => {
+        imageInput.change((event: JQuery.ChangeEvent) => {
             const target = $(event.target).get(0).files
 
             if (target.length > 0) {
@@ -107,18 +106,19 @@ const sendImage = () => {
                 reader.onload = (() => {
                     const result = reader.result
                     const clientId = socket.id
+
                     socket.emit('send-img', {
                         result,
                         clientId
                     })
                 })
 
-                $('.input--image').val('')
+                imageInput.val('')
             }
         })
     })
 
-    document.addEventListener('paste', event => {
+    document.addEventListener('paste', (event: ClipboardEvent) => {
         const target = event.clipboardData?.files
 
         if (target !== undefined) {
