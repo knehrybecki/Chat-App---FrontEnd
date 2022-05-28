@@ -1,8 +1,7 @@
 import { format } from 'date-fns'
 import $ from 'jquery'
-import { clientId, socket } from './main'
+import { socket } from './main'
 import { PersonSendImage, PersonSendMessage } from './types'
-
 
 export const createChatMessage = () => {
     const windowMessage = $('.message')
@@ -18,7 +17,7 @@ export const createChatMessage = () => {
     socket.on('image', (image: PersonSendImage) => {
         const img = getImage(image)
   
-        if (clientId === image.src.clientId) {
+        if (socket.id === image.src.clientId) {
             img.addClass('myMessage')
         }
         
@@ -28,7 +27,7 @@ export const createChatMessage = () => {
     socket.on('message', (message: PersonSendMessage) => {
         const sendMsg = createSendMessage(message)
 
-        if (clientId === message.clientId) {
+        if (socket.id === message.clientId) {
             sendMsg.addClass('myMessage')
         }
         windowMessage.scrollTop(windowMessage?.get(0)?.scrollHeight!)
@@ -44,7 +43,7 @@ export const createChatMessage = () => {
         socket.emit('chatMessage', {
             message: inputText.val(),
             userName: $('.input--name').val(),
-            clientId: clientId
+            clientId: socket.id
         })
 
         inputText.val('')
@@ -106,6 +105,7 @@ const sendImage = () => {
 
                 reader.onload = (() => {
                     const result = reader.result
+                    const clientId = socket.id
 
                     socket.emit('send-img', {
                         result,
@@ -129,6 +129,7 @@ const sendImage = () => {
 
             reader.onload = (() => {
                 const result = reader.result
+                const clientId = socket.id
 
                 socket.emit('send-img', {
                     result,
