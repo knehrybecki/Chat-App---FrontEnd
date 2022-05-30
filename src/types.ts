@@ -1,7 +1,8 @@
 export type PersonSendMessage = {
-    message: string,
-    userName: string,
+    message: string | number | string[] | undefined,
+    userName: string | number | string[] | undefined,
     clientId: string,
+    hoursSend: string
 }
 
 export type PersonSendImage = {
@@ -10,3 +11,7 @@ export type PersonSendImage = {
         clientId: string
     }
 }
+
+export type AllGetMessageInRoom = {
+    getAllMessage: [PersonSendImage | PersonSendMessage] 
+}  

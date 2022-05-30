@@ -1,11 +1,30 @@
 import { format } from 'date-fns'
 import $ from 'jquery'
 import { socket } from './main'
-import { PersonSendImage, PersonSendMessage } from './types'
+import {
+    AllGetMessageInRoom,
+    PersonSendImage,
+    PersonSendMessage
+} from './types'
 
-export const createChatMessage = () => {
+let allMessage: Array<PersonSendImage | PersonSendMessage> = []
+
+export const createChatMessage = async () => {
     const windowMessage = $('.message')
     const inputText = $('.input--text')
+
+    socket.on('addMessageToRoom', (allMessageInRoom: Array<AllGetMessageInRoom>) => {
+        if (allMessageInRoom.length === 0) {
+            return
+        }
+
+        const [messages] = allMessageInRoom
+        const msg = messages.getAllMessage
+
+        allMessage = allMessage.concat(msg)
+
+        addMessageToRoom(allMessage)
+    })
 
     socket.on('roomMessage', (roomMessage: string) => {
         $('<p>', {
@@ -16,11 +35,12 @@ export const createChatMessage = () => {
 
     socket.on('image', (image: PersonSendImage) => {
         const img = getImage(image)
-  
+
         if (socket.id === image.src.clientId) {
             img.addClass('myMessage')
         }
-        
+        allMessage = allMessage.concat(image)
+
         windowMessage.scrollTop(windowMessage?.get(0)?.scrollHeight!)
     })
 
@@ -39,12 +59,19 @@ export const createChatMessage = () => {
         }
 
         event.preventDefault()
-       
-        socket.emit('chatMessage', {
+
+        const hours = format(new Date(), 'HH:mm')
+
+        const dataMessage = {
             message: inputText.val(),
             userName: $('.input--name').val(),
-            clientId: socket.id
-        })
+            clientId: socket.id,
+            hoursSend: hours
+        }
+
+        allMessage = allMessage.concat(dataMessage)
+
+        socket.emit('chatMessage', dataMessage)
 
         inputText.val('')
         inputText.focus()
@@ -52,7 +79,7 @@ export const createChatMessage = () => {
 
     $('.input--button').click(sendMessage)
 
-        inputText.keypress(event => {
+    inputText.keypress(event => {
         if (event.which === 13) {
             sendMessage(event)
         }
@@ -70,10 +97,39 @@ export const createSendMessage = (message: PersonSendMessage) => {
     }).appendTo($('.message'))
 
     $('<span>', {
-        text: format(new Date(), 'HH:mm')
+        text: message.hoursSend
     }).appendTo(textUser)
 
     return textUser
+}
+
+const addMessageToRoom = allMessage => {
+    allMessage.forEach((message) => {
+        if (message.message === undefined) {
+            $('<img>', {
+                class: 'image',
+                clientid: message.clientId,
+                src: message.result,
+                alt: 'img'
+            }).appendTo($('.message'))
+
+            return
+        }
+        const textUser = $('<p>', {
+            class: 'message--user',
+            text: message.message,
+            name: message.userName,
+            'client-id': message.clientId
+        }).appendTo($('.message'))
+
+        $('<span>', {
+            text: message.hoursSend
+        }).appendTo(textUser)
+
+        if (message.userName === $('.input--name').val()) {
+            textUser.addClass('myMessage')
+        }
+    })
 }
 
 const getImage = (image: PersonSendImage) => {
@@ -139,7 +195,6 @@ const sendImage = () => {
         }
     })
 }
-
 
 window.addEventListener('DOMContentLoaded', () => {
     window.history.pushState('http://localhost:3001/', 'Title', '/')
