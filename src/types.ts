@@ -8,11 +8,8 @@ export type TextMessage = {
 export type ImageMessage = {
     result: string,
     clientId: string,
-    createdAt?: never,
-    userName?: never,
-    message?: never
 }
 
 export type GetAllMessagesResponse = {
-    getAllMessage: Array<ImageMessage | TextMessage>
+    messages: Array<ImageMessage | TextMessage>
 }

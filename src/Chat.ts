@@ -20,9 +20,9 @@ export const createChatMessage = () => {
             return
         }
 
-        allMessage = allMessage.concat(messages.getAllMessage)
+        allMessage = allMessage.concat(messages.messages)
 
-        addMessageToRoom(allMessage)
+        addMessagesToRoom(allMessage)
 
         $('<p>', {
             class: 'message--room',
@@ -101,13 +101,16 @@ export const createSendMessage = (message: TextMessage) => {
     return textUser
 }
 
-const addMessageToRoom = (allMessage: Array<ImageMessage | TextMessage>) => {
-    allMessage.forEach(message => {
-        if (message.message === undefined) {
+const addMessagesToRoom = (allMessages: Array<ImageMessage | TextMessage>) => {
+    allMessages.forEach(message => {
+        const text = message as TextMessage
+        const image = message as ImageMessage
+
+        if (text.userName === undefined) {
             $('<img>', {
                 class: 'image',
-                clientid: message.clientId,
-                src: message.result,
+                clientid: image.clientId,
+                src: image.result,
                 alt: 'img'
             }).appendTo($('.message'))
 
@@ -116,16 +119,16 @@ const addMessageToRoom = (allMessage: Array<ImageMessage | TextMessage>) => {
 
         const textUser = $('<p>', {
             class: 'message--user',
-            text: message.message,
-            name: message.userName,
-            'client-id': message.clientId
+            text: text.message,
+            name: text.userName,
+            'client-id': text.clientId
         }).appendTo($('.message'))
 
         $('<span>', {
-            text: message.createdAt
+            text: text.createdAt
         }).appendTo(textUser)
 
-        if (message.userName === $('.input--name').val()) {
+        if (text.userName === $('.input--name').val()) {
             textUser.addClass('myMessage')
         }
     })
