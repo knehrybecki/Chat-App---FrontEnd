@@ -2,49 +2,47 @@ import { format } from 'date-fns'
 import $ from 'jquery'
 import { socket } from './main'
 import {
-    AllGetMessageInRoom,
-    PersonSendImage,
-    PersonSendMessage
+    GetAllMessagesResponse,
+    ImageMessage,
+    TextMessage
 } from './types'
 
-let allMessage: Array<PersonSendImage | PersonSendMessage> = []
+let allMessage: Array<ImageMessage | TextMessage> = []
 
-export const createChatMessage = async () => {
+export const createChatMessage = () => {
     const windowMessage = $('.message')
     const inputText = $('.input--text')
 
-    socket.on('addMessageToRoom', (allMessageInRoom: Array<AllGetMessageInRoom>) => {
-        if (allMessageInRoom.length === 0) {
+    socket.on('roomMessage', (roomMessage: string, allMessageInRoom: Array<GetAllMessagesResponse>) => {
+        const [messages] = allMessageInRoom
+
+        if (messages === undefined) {
             return
         }
 
-        const [messages] = allMessageInRoom
-        const msg = messages.getAllMessage
-
-        allMessage = allMessage.concat(msg)
+        allMessage = allMessage.concat(messages.getAllMessage)
 
         addMessageToRoom(allMessage)
-    })
 
-    socket.on('roomMessage', (roomMessage: string) => {
         $('<p>', {
             class: 'message--room',
             text: roomMessage
         }).appendTo($('.message'))
     })
 
-    socket.on('image', (image: PersonSendImage) => {
+    socket.on('image', (image: ImageMessage) => {
         const img = getImage(image)
 
-        if (socket.id === image.src.clientId) {
+        if (socket.id === image.clientId) {
             img.addClass('myMessage')
         }
+
         allMessage = allMessage.concat(image)
 
         windowMessage.scrollTop(windowMessage?.get(0)?.scrollHeight!)
     })
 
-    socket.on('message', (message: PersonSendMessage) => {
+    socket.on('message', (message: TextMessage) => {
         const sendMsg = createSendMessage(message)
 
         if (socket.id === message.clientId) {
@@ -63,10 +61,10 @@ export const createChatMessage = async () => {
         const hours = format(new Date(), 'HH:mm')
 
         const dataMessage = {
-            message: inputText.val(),
-            userName: $('.input--name').val(),
+            message: $('.input--text').val() as string,
+            userName: $('.input--name').val() as string,
             clientId: socket.id,
-            hoursSend: hours
+            createdAt: hours
         }
 
         allMessage = allMessage.concat(dataMessage)
@@ -88,7 +86,7 @@ export const createChatMessage = async () => {
     sendImage()
 }
 
-export const createSendMessage = (message: PersonSendMessage) => {
+export const createSendMessage = (message: TextMessage) => {
     const textUser = $('<p>', {
         class: 'message--user',
         text: message.message,
@@ -97,14 +95,14 @@ export const createSendMessage = (message: PersonSendMessage) => {
     }).appendTo($('.message'))
 
     $('<span>', {
-        text: message.hoursSend
+        text: message.createdAt
     }).appendTo(textUser)
 
     return textUser
 }
 
-const addMessageToRoom = allMessage => {
-    allMessage.forEach((message) => {
+const addMessageToRoom = (allMessage: Array<ImageMessage | TextMessage>) => {
+    allMessage.forEach(message => {
         if (message.message === undefined) {
             $('<img>', {
                 class: 'image',
@@ -115,6 +113,7 @@ const addMessageToRoom = allMessage => {
 
             return
         }
+
         const textUser = $('<p>', {
             class: 'message--user',
             text: message.message,
@@ -123,7 +122,7 @@ const addMessageToRoom = allMessage => {
         }).appendTo($('.message'))
 
         $('<span>', {
-            text: message.hoursSend
+            text: message.createdAt
         }).appendTo(textUser)
 
         if (message.userName === $('.input--name').val()) {
@@ -132,11 +131,11 @@ const addMessageToRoom = allMessage => {
     })
 }
 
-const getImage = (image: PersonSendImage) => {
+const getImage = (image: ImageMessage) => {
     const img = $('<img>', {
         class: 'image',
-        clientid: image.src.clientId,
-        src: image.src.result,
+        clientid: image.clientId,
+        src: image.result,
         alt: 'img'
     }).appendTo($('.message'))
 
@@ -186,7 +185,6 @@ const sendImage = () => {
             reader.onload = (() => {
                 const result = reader.result
                 const clientId = socket.id
-
                 socket.emit('send-img', {
                     result,
                     clientId

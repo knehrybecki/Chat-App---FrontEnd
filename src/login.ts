@@ -4,8 +4,8 @@ import { socket } from './main'
 
 export const createJoinUserToChat = () => {
     $('.join__button').click(event => {
-        const userName = $('.input--name').val()
-        const roomName = $('.input--room').val()
+        const userName = $('.input--name').val() as string
+        const roomName = $('.input--room').val() as string
         const clientId = socket.id
 
         if (userName === '' || roomName === '') {

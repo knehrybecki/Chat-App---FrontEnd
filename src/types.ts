@@ -1,17 +1,18 @@
-export type PersonSendMessage = {
-    message: string | number | string[] | undefined,
-    userName: string | number | string[] | undefined,
+export type TextMessage = {
+    message: string,
+    userName: string,
     clientId: string,
-    hoursSend: string
+    createdAt: string,
 }
 
-export type PersonSendImage = {
-    src: {
-        result: string,
-        clientId: string
-    }
+export type ImageMessage = {
+    result: string,
+    clientId: string,
+    createdAt?: never,
+    userName?: never,
+    message?: never
 }
 
-export type AllGetMessageInRoom = {
-    getAllMessage: [PersonSendImage | PersonSendMessage] 
-}  
+export type GetAllMessagesResponse = {
+    getAllMessage: Array<ImageMessage | TextMessage>
+}
