@@ -1,14 +1,17 @@
-export interface TextMessage  {
-    message: string,
+type Message = {
     userName: string,
-    clientId: string,
+    userUUID: string,
+    roomUUID: string,
     createdAt: string,
-}
+  }
 
-export interface ImageMessage  {
-    result: string,
-    clientId: string,
-}
+  export interface TextMessage extends Message {
+    text: string
+  }
+  
+  export interface ImageMessage extends Message {
+    imageUrl: string,
+  }
 
 export interface GetAllMessagesResponse  {
     messages: Array<ImageMessage | TextMessage>

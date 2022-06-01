@@ -5,10 +5,10 @@ import { socket } from './main'
 export const createJoinUserToChat = () => {
     $('.join__button').click(event => {
         const userName = $('.input--name').val() as string
-        const roomName = $('.input--room').val() as string
-        const clientId = socket.id
+        const roomUUID = $('.input--room').val() as string
+        const userUUID = socket.id
 
-        if (userName === '' || roomName === '') {
+        if (userName === '' || roomUUID === '') {
             return
         }
         
@@ -16,11 +16,11 @@ export const createJoinUserToChat = () => {
 
         socket.emit('userData', {
             userName,
-            roomName,
-            clientId
+            userUUID,
+            roomUUID 
         })
 
-        window.history.pushState('http://localhost:3001/', 'Title', `/${roomName}/${userName}`)
+        window.history.pushState('http://localhost:3001/', 'Title', `/${roomUUID}/${userName}`)
 
         $('.chat__join').hide()
         $('.chat__input').show()

@@ -7,37 +7,39 @@ import {
     TextMessage
 } from './types'
 
-let allMessage: Array<ImageMessage | TextMessage> = []
+let allMessages: Array<ImageMessage | TextMessage> = []
 
 export const createChatMessage = () => {
     const windowMessage = $('.message')
     const inputText = $('.input--text')
 
     socket.on('roomMessage', (roomMessage: string, allMessageInRoom: Array<GetAllMessagesResponse>) => {
+        const textRoom = $('<p>', {
+            class: 'message--room',
+            text: roomMessage
+        }).appendTo($('.message'))
+
         const [messages] = allMessageInRoom
 
         if (!messages) {
             return
         }
 
-        allMessage = allMessage.concat(messages.messages)
+        allMessages = allMessages.concat(messages.messages)
 
-        addMessagesToRoom(allMessage)
+        addMessagesToRoom(allMessages)
 
-        $('<p>', {
-            class: 'message--room',
-            text: roomMessage
-        }).appendTo($('.message'))
+        textRoom.appendTo($('.message'))
     })
 
     socket.on('image', (image: ImageMessage) => {
         const img = getImage(image)
 
-        if (socket.id === image.clientId) {
+        if (socket.id === image.userUUID) {
             img.addClass('myMessage')
         }
 
-        allMessage = allMessage.concat(image)
+        allMessages = allMessages.concat(image)
 
         windowMessage.scrollTop(windowMessage?.get(0)?.scrollHeight!)
     })
@@ -45,12 +47,12 @@ export const createChatMessage = () => {
     socket.on('message', (message: TextMessage) => {
         const sendMsg = createSendMessage(message)
 
-        if (socket.id === message.clientId) {
+        if (socket.id === message.userUUID) {
             sendMsg.addClass('myMessage')
         }
         windowMessage.scrollTop(windowMessage?.get(0)?.scrollHeight!)
     })
-
+ 
     const sendMessage = (event: JQuery.ClickEvent | JQuery.KeyPressEvent) => {
         if (inputText.val() === '') {
             return
@@ -61,13 +63,14 @@ export const createChatMessage = () => {
         const hours = format(new Date(), 'HH:mm')
 
         const dataMessage = {
-            message: $('.input--text').val() as string,
             userName: $('.input--name').val() as string,
-            clientId: socket.id,
-            createdAt: hours
+            userUUID: socket.id,
+            roomUUID: $('.input--room').val() as string,
+            createdAt: hours,
+            text: $('.input--text').val() as string
         }
 
-        allMessage = allMessage.concat(dataMessage)
+        allMessages = allMessages.concat(dataMessage)
 
         socket.emit('chatMessage', dataMessage)
 
@@ -89,9 +92,8 @@ export const createChatMessage = () => {
 export const createSendMessage = (message: TextMessage) => {
     const textUser = $('<p>', {
         class: 'message--user',
-        text: message.message,
-        name: message.userName,
-        'client-id': message.clientId
+        text: message.text,
+        'client-id': message.userUUID
     }).appendTo($('.message'))
 
     $('<span>', {
@@ -102,15 +104,15 @@ export const createSendMessage = (message: TextMessage) => {
 }
 
 const addMessagesToRoom = (allMessages: Array<ImageMessage | TextMessage>) => {
-    allMessages.forEach(message => {
-        const text = message as TextMessage
-        const image = message as ImageMessage
+    allMessages.forEach((message: ImageMessage | TextMessage )=> {
+     const image = message as ImageMessage
+     const text = message as TextMessage
 
-        if (!text.userName) {
+        if (!message.userName) {
             $('<img>', {
                 class: 'image',
-                clientid: image.clientId,
-                src: image.result,
+                clientid: message.userUUID,
+                src: image.imageUrl,
                 alt: 'img'
             }).appendTo($('.message'))
 
@@ -119,16 +121,15 @@ const addMessagesToRoom = (allMessages: Array<ImageMessage | TextMessage>) => {
 
         const textUser = $('<p>', {
             class: 'message--user',
-            text: text.message,
-            name: text.userName,
-            'client-id': text.clientId
+            text: text.text,
+            'client-id': message.userUUID
         }).appendTo($('.message'))
 
         $('<span>', {
-            text: text.createdAt
+            text: message.createdAt
         }).appendTo(textUser)
 
-        if (text.userName === $('.input--name').val()) {
+        if (message.userName === $('.input--name').val()) {
             textUser.addClass('myMessage')
         }
     })
@@ -137,8 +138,8 @@ const addMessagesToRoom = (allMessages: Array<ImageMessage | TextMessage>) => {
 const getImage = (image: ImageMessage) => {
     const img = $('<img>', {
         class: 'image',
-        clientid: image.clientId,
-        src: image.result,
+        clientUUID: image.userUUID,
+        src: image.imageUrl,
         alt: 'img'
     }).appendTo($('.message'))
 
@@ -162,12 +163,12 @@ const sendImage = () => {
                 reader.readAsDataURL(file)
 
                 reader.onload = (() => {
-                    const result = reader.result
-                    const clientId = socket.id
+                    const imageUrl = reader.result
+                    const userUUID = socket.id
 
                     socket.emit('send-img', {
-                        result,
-                        clientId
+                        imageUrl,
+                        userUUID
                     })
                 })
 
@@ -186,11 +187,11 @@ const sendImage = () => {
             reader.readAsDataURL(file)
 
             reader.onload = (() => {
-                const result = reader.result
-                const clientId = socket.id
+                const imageUrl = reader.result
+                const userUUID = socket.id
                 socket.emit('send-img', {
-                    result,
-                    clientId
+                    imageUrl,
+                    userUUID
                 })
             })
         }
