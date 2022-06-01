@@ -16,7 +16,7 @@ export const createChatMessage = () => {
     socket.on('roomMessage', (roomMessage: string, allMessageInRoom: Array<GetAllMessagesResponse>) => {
         const [messages] = allMessageInRoom
 
-        if (messages === undefined) {
+        if (!messages) {
             return
         }
 
@@ -106,7 +106,7 @@ const addMessagesToRoom = (allMessages: Array<ImageMessage | TextMessage>) => {
         const text = message as TextMessage
         const image = message as ImageMessage
 
-        if (text.userName === undefined) {
+        if (!text.userName) {
             $('<img>', {
                 class: 'image',
                 clientid: image.clientId,

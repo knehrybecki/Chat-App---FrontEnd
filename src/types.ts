@@ -1,15 +1,15 @@
-export type TextMessage = {
+export interface TextMessage  {
     message: string,
     userName: string,
     clientId: string,
     createdAt: string,
 }
 
-export type ImageMessage = {
+export interface ImageMessage  {
     result: string,
     clientId: string,
 }
 
-export type GetAllMessagesResponse = {
+export interface GetAllMessagesResponse  {
     messages: Array<ImageMessage | TextMessage>
 }
