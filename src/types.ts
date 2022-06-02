@@ -1,25 +1,25 @@
 export enum MessageType {
     Text = 'text',
-    Image = 'image'
+    Image = 'image',
 }
 
 type Message = {
-    userName: string,
-    userUUID: string,
-    roomUUID: string,
-    createdAt: string,
+    userName: string
+    userUUID: string
+    roomUUID: string
+    createdAt: string
 }
 
 export interface TextMessage extends Message {
-    text: string,
-    type: string
+    text: string
+    type: MessageType
 }
 
 export interface ImageMessage extends Message {
-    imageUrl: string,
-    type: string
+    imageUrl: string
+    type: MessageType
 }
 
 export interface GetAllMessagesResponse {
-    messages: Array<ImageMessage | TextMessage>
+    allMessages: Array<ImageMessage | TextMessage>
 }

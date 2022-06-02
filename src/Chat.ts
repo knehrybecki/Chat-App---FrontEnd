@@ -1,6 +1,8 @@
 import { format } from 'date-fns'
 import $ from 'jquery'
 import { socket } from './main'
+import { addMessagesToRoom } from './Messages.ts/addMessageToRoom'
+import { createSendMessage } from './Messages.ts/sendMessage'
 import {
     GetAllMessagesResponse,
     ImageMessage,
@@ -9,38 +11,40 @@ import {
 } from './types'
 
 let allMessages: Array<ImageMessage | TextMessage> = []
+export const hours = format(new Date(), 'HH:mm')
 
 export const createChatMessage = () => {
     const windowMessage = $('.message')
     const inputText = $('.input--text')
 
-    socket.on('roomMessage', (roomMessage: string, allMessageInRoom: Array<GetAllMessagesResponse>) => {
-        const textRoom = $('<p>', {
-            class: 'message--room',
-            text: roomMessage
-        }).appendTo($('.message'))
+    socket.on('roomMessage', (roomMessage: string, allMessageInRoom: GetAllMessagesResponse) => {
+        const allMessage = allMessageInRoom.allMessages
 
-        const [messages] = allMessageInRoom
+        if (allMessageInRoom) {
+            allMessages = allMessages.concat(allMessage)
 
-        if (!messages) {
-            return
+            addMessagesToRoom(allMessages)
+
+            $('<p>', {
+                class: 'message--room',
+                text: roomMessage,
+            }).appendTo($('.message'))
         }
 
-        allMessages = allMessages.concat(messages.messages)
-
-        addMessagesToRoom(allMessages)
-
-        textRoom.appendTo($('.message'))
+        windowMessage.scrollTop(windowMessage?.get(0)?.scrollHeight!)
     })
 
     socket.on('image', (image: ImageMessage) => {
-        const img = getImage(image)
+        const images = $('<img>', {
+            class: 'image',
+            clientUUID: image.userUUID,
+            src: image.imageUrl,
+            alt: 'img',
+        }).appendTo($('.message'))
 
         if (socket.id === image.userUUID) {
-            img.addClass('myMessage')
+            images.addClass('myMessage')
         }
-
-        allMessages = allMessages.concat(image)
 
         windowMessage.scrollTop(windowMessage?.get(0)?.scrollHeight!)
     })
@@ -51,6 +55,7 @@ export const createChatMessage = () => {
         if (socket.id === message.userUUID) {
             sendMsg.addClass('myMessage')
         }
+
         windowMessage.scrollTop(windowMessage?.get(0)?.scrollHeight!)
     })
 
@@ -61,20 +66,18 @@ export const createChatMessage = () => {
 
         event.preventDefault()
 
-        const hours = format(new Date(), 'HH:mm')
-
         const dataMessage = {
             userName: $('.input--name').val() as string,
             userUUID: socket.id,
             roomUUID: $('.input--room').val() as string,
             createdAt: hours,
             text: $('.input--text').val() as string,
-            type: MessageType.Text
+            type: MessageType.Text,
         }
 
         allMessages = allMessages.concat(dataMessage)
 
-        socket.emit('chatMessage', dataMessage)
+        socket.emit('chatMessage', dataMessage, allMessages)
 
         inputText.val('')
         inputText.focus()
@@ -88,126 +91,69 @@ export const createChatMessage = () => {
         }
     })
 
-    sendImage()
-}
+    const sendImage = () => {
+        $('.fa-image').click(() => {
+            const imageInput = $('.input--image')
 
-export const createSendMessage = (message: TextMessage) => {
-    const textUser = $('<p>', {
-        class: 'message--user',
-        text: message.text,
-        'client-id': message.userUUID
-    }).appendTo($('.message'))
+            imageInput.click()
 
-    $('<span>', {
-        text: message.createdAt
-    }).appendTo(textUser)
+            imageInput.change((event: JQuery.ChangeEvent) => {
+                const target = $(event.target).get(0).files
 
-    return textUser
-}
+                if (target.length > 0) {
+                    const reader = new FileReader()
 
-const addMessagesToRoom = (allMessages: Array<ImageMessage | TextMessage>) => {
-    allMessages.forEach(message => {
-        if (message.type === MessageType.Image) {
-            const image = message as ImageMessage
+                    const [file] = target
 
-            if (!message.userName) {
-                $('<img>', {
-                    class: 'image',
-                    clientid: message.userUUID,
-                    src: image.imageUrl,
-                    alt: 'img',
-                }).appendTo($('.message'))
+                    reader.readAsDataURL(file)
 
-                return
-            }
-        }
+                    reader.onload = () => {
+                        const dataMessage = {
+                            userName: $('.input--name').val() as string,
+                            userUUID: socket.id,
+                            roomUUID: $('.input--room').val() as string,
+                            createdAt: hours,
+                            imageUrl: reader.result as string,
+                            type: MessageType.Image,
+                        }
 
-        if (message.type === MessageType.Text) {
-            const text = message as TextMessage
+                        allMessages = allMessages.concat(dataMessage)
 
-            const textUser = $('<p>', {
-                class: 'message--user',
-                text: text.text,
-                'client-id': message.userUUID,
-            }).appendTo($('.message'))
+                        socket.emit('sendImage', dataMessage, allMessages)
+                    }
 
-            $('<span>', {
-                text: message.createdAt,
-            }).appendTo(textUser)
+                    imageInput.val('')
+                }
+            })
+        })
 
-            if (message.userName === $('.input--name').val()) {
-                textUser.addClass('myMessage')
-            }
-        }
-    })
-}
+        document.addEventListener('paste', async (event: ClipboardEvent) => {
+            const target = event.clipboardData?.files
 
-const getImage = (image: ImageMessage) => {
-    const img = $('<img>', {
-        class: 'image',
-        clientUUID: image.userUUID,
-        src: image.imageUrl,
-        alt: 'img'
-    }).appendTo($('.message'))
-
-    return img
-}
-
-const sendImage = () => {
-    $('.fa-image').click(() => {
-        const imageInput = $('.input--image')
-
-        imageInput.click()
-
-        imageInput.change((event: JQuery.ChangeEvent) => {
-            const target = $(event.target).get(0).files
-
-            if (target.length > 0) {
+            if (target !== undefined) {
                 const reader = new FileReader()
-
                 const [file] = target
 
                 reader.readAsDataURL(file)
 
-                reader.onload = (() => {
-                    const imageUrl = reader.result
-                    const userUUID = socket.id
-                    const messageType = MessageType.Image
+                reader.onload = () => {
+                    const dataMessage = {
+                        userName: $('.input--name').val() as string,
+                        userUUID: socket.id,
+                        roomUUID: $('.input--room').val() as string,
+                        createdAt: hours,
+                        imageUrl: reader.result as string,
+                        type: MessageType.Image,
+                    }
 
-                    socket.emit('send-img', {
-                        imageUrl,
-                        userUUID,
-                        messageType
-                    })
-                })
+                    allMessages = allMessages.concat(dataMessage)
 
-                imageInput.val('')
+                    socket.emit('sendImage', dataMessage, allMessages)
+                }
             }
         })
-    })
-
-    document.addEventListener('paste', (event: ClipboardEvent) => {
-        const target = event.clipboardData?.files
-
-        if (target !== undefined) {
-            const reader = new FileReader()
-            const [file] = target
-
-            reader.readAsDataURL(file)
-
-            reader.onload = (() => {
-                const imageUrl = reader.result
-                const userUUID = socket.id
-                const messageType = MessageType.Image
-                
-                socket.emit('send-img', {
-                    imageUrl,
-                    userUUID,
-                    messageType
-                })
-            })
-        }
-    })
+    }
+    sendImage()
 }
 
 window.addEventListener('DOMContentLoaded', () => {
