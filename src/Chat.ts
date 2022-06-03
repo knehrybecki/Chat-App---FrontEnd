@@ -1,8 +1,8 @@
 import { format } from 'date-fns'
 import $ from 'jquery'
 import { socket } from './main'
-import { addMessagesToRoom } from './Messages.ts/addMessageToRoom'
-import { createSendMessage } from './Messages.ts/sendMessage'
+import { addMessagesToRoom } from './Messages/addMessageToRoom'
+import { AddMessage } from './Messages/sendMessage'
 import {
     GetAllMessagesResponse,
     ImageMessage,
@@ -18,20 +18,20 @@ export const createChatMessage = () => {
     const inputText = $('.input--text')
 
     socket.on('roomMessage', (roomMessage: string, allMessageInRoom: GetAllMessagesResponse) => {
-        const allMessage = allMessageInRoom.allMessages
-
         if (allMessageInRoom) {
+            const allMessage = allMessageInRoom.allMessages
+            
             allMessages = allMessages.concat(allMessage)
 
             addMessagesToRoom(allMessages)
+
+            windowMessage.scrollTop(windowMessage?.get(0)?.scrollHeight!)
 
             $('<p>', {
                 class: 'message--room',
                 text: roomMessage,
             }).appendTo($('.message'))
         }
-
-        windowMessage.scrollTop(windowMessage?.get(0)?.scrollHeight!)
     })
 
     socket.on('image', (image: ImageMessage) => {
@@ -50,7 +50,7 @@ export const createChatMessage = () => {
     })
 
     socket.on('message', (message: TextMessage) => {
-        const sendMsg = createSendMessage(message)
+        const sendMsg = AddMessage(message)
 
         if (socket.id === message.userUUID) {
             sendMsg.addClass('myMessage')

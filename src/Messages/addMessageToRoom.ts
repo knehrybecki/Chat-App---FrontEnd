@@ -3,8 +3,8 @@ import { ImageMessage, MessageType, TextMessage } from '../types'
 
 export const addMessagesToRoom = (allMessages: Array<ImageMessage | TextMessage>) => {
     allMessages.forEach(message => {
-        switch (message.type) {
-            case MessageType.Image:
+        switch(message.type) {
+            case MessageType.Image: {
                 const image = message as ImageMessage
 
                 $('<img>', {
@@ -14,9 +14,9 @@ export const addMessagesToRoom = (allMessages: Array<ImageMessage | TextMessage>
                     alt: 'img',
                 }).appendTo($('.message'))
 
-                break
-
-            case MessageType.Text:
+                return
+            }
+            case MessageType.Text: {
                 const text = message as TextMessage
 
                 const textUser = $('<p>', {
@@ -33,7 +33,8 @@ export const addMessagesToRoom = (allMessages: Array<ImageMessage | TextMessage>
                     textUser.addClass('myMessage')
                 }
 
-                break
+                return
+            }
         }
     })
 }

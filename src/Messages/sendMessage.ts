@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import { TextMessage } from '../types'
 
-export const createSendMessage = (message: TextMessage) => {
+export const AddMessage = (message: TextMessage) => {
     const textUser = $('<p>', {
         class: 'message--user',
         text: message.text,
