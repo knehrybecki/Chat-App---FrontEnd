@@ -1,6 +1,7 @@
 import $ from 'jquery'
 import { createChatMessage } from './Chat'
 import { socket } from './main'
+import { sockets } from './types'
 
 export const createJoinUserToChat = () => {
     $('.join__button').click(event => {
@@ -14,7 +15,7 @@ export const createJoinUserToChat = () => {
 
         event.preventDefault()
 
-        socket.emit('userData', {
+        socket.emit(sockets.userData, {
             userName,
             userUUID,
             roomUUID,
