@@ -1,8 +1,6 @@
 import { format } from 'date-fns'
 import $ from 'jquery'
 import { socket } from './main'
-import { addMessagesToRoom } from './Messages/addMessageToRoom'
-import { addMessage } from './Messages/sendMessage'
 import {
     GetAllMessagesResponse,
     ImageMessage,
@@ -10,6 +8,8 @@ import {
     sockets,
     TextMessage
 } from './types'
+import { addMessagesToRoom } from './Messages/addMessageToRoom'
+import { addMessage } from './Messages/sendMessage'
 
 let allMessages: Array<ImageMessage | TextMessage> = []
 export const hours = format(new Date(), 'HH:mm')
@@ -21,18 +21,18 @@ export const createChatMessage = () => {
     socket.on(sockets.roomMessage, (roomMessage: string, allMessageInRoom: GetAllMessagesResponse) => {
         if (allMessageInRoom) {
             const allMessage = allMessageInRoom.allMessages
-            
+
             allMessages = allMessages.concat(allMessage)
 
             addMessagesToRoom(allMessages)
 
             windowMessage.scrollTop(windowMessage?.get(0)?.scrollHeight!)
-
-            $('<p>', {
-                class: 'message--room',
-                text: roomMessage,
-            }).appendTo($('.message'))
         }
+
+        $('<p>', {
+            class: 'message--room',
+            text: roomMessage,
+        }).appendTo($('.message'))
     })
 
     socket.on(sockets.image, (image: ImageMessage) => {
@@ -131,7 +131,7 @@ export const createChatMessage = () => {
         document.addEventListener('paste', async (event: ClipboardEvent) => {
             const target = event.clipboardData?.files
 
-            if (target !== undefined) {
+            if (target) {
                 const reader = new FileReader()
                 const [file] = target
 
