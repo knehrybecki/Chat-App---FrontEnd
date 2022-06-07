@@ -4,7 +4,7 @@ export enum MessageType {
 }
 
 type Message = {
-    userName: string
+    personName: string
     userUUID: string
     roomUUID: string
     createdAt: string

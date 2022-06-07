@@ -29,7 +29,7 @@ export const addMessagesToRoom = (allMessages: Array<ImageMessage | TextMessage>
                     text: text.createdAt,
                 }).appendTo(textUser)
 
-                if (text.userName === $('.input--name').val()) {
+                if (text.personName === $('.input--name').val()) {
                     textUser.addClass('myMessage')
                 }
 

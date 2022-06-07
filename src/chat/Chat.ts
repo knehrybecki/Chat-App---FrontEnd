@@ -1,8 +1,7 @@
-import $ from 'jquery'
+import { socket } from 'app'
 import { format } from 'date-fns'
-import { socket } from 'main'
-import { addMessagesToRoom } from 'Messages/addMessageToRoom'
-import { addMessage } from 'Messages/sendMessage'
+import $ from 'jquery'
+import { addMessage, addMessagesToRoom } from 'messages'
 import {
     GetAllMessagesResponse,
     ImageMessage,
@@ -68,7 +67,7 @@ export const createChatMessage = () => {
         event.preventDefault()
 
         const dataMessage = {
-            userName: $('.input--name').val() as string,
+            personName: $('.input--name').val() as string,
             userUUID: socket.id,
             roomUUID: $('.input--room').val() as string,
             createdAt: hours,
@@ -110,7 +109,7 @@ export const createChatMessage = () => {
 
                     reader.onload = () => {
                         const dataMessage = {
-                            userName: $('.input--name').val() as string,
+                            personName: $('.input--name').val() as string,
                             userUUID: socket.id,
                             roomUUID: $('.input--room').val() as string,
                             createdAt: hours,
@@ -139,7 +138,7 @@ export const createChatMessage = () => {
 
                 reader.onload = () => {
                     const dataMessage = {
-                        userName: $('.input--name').val() as string,
+                        personName: $('.input--name').val() as string,
                         userUUID: socket.id,
                         roomUUID: $('.input--room').val() as string,
                         createdAt: hours,

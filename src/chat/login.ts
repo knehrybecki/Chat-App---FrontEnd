@@ -1,6 +1,6 @@
+import { socket } from 'app'
+import { createChatMessage } from 'chat'
 import $ from 'jquery'
-import { createChatMessage } from 'Chat'
-import { socket } from 'main'
 import { Sockets } from 'types'
 
 export const createJoinUserToChat = () => {
