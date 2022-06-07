@@ -1,5 +1,5 @@
 import $ from 'jquery'
-import { ImageMessage, MessageType, TextMessage } from '../types'
+import { ImageMessage, MessageType, TextMessage } from 'types'
 
 export const addMessagesToRoom = (allMessages: Array<ImageMessage | TextMessage>) => {
     allMessages.forEach(message => {

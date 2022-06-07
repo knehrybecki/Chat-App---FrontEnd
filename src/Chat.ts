@@ -1,15 +1,15 @@
-import { format } from 'date-fns'
 import $ from 'jquery'
-import { socket } from './main'
+import { format } from 'date-fns'
+import { socket } from 'main'
+import { addMessagesToRoom } from 'Messages/addMessageToRoom'
+import { addMessage } from 'Messages/sendMessage'
 import {
     GetAllMessagesResponse,
     ImageMessage,
     MessageType,
-    sockets,
+    Sockets,
     TextMessage
-} from './types'
-import { addMessagesToRoom } from './Messages/addMessageToRoom'
-import { addMessage } from './Messages/sendMessage'
+} from 'types'
 
 let allMessages: Array<ImageMessage | TextMessage> = []
 export const hours = format(new Date(), 'HH:mm')
@@ -18,7 +18,7 @@ export const createChatMessage = () => {
     const windowMessage = $('.message')
     const inputText = $('.input--text')
 
-    socket.on(sockets.roomMessage, (roomMessage: string, allMessageInRoom: GetAllMessagesResponse) => {
+    socket.on(Sockets.RoomMessage, (roomMessage: string, allMessageInRoom: GetAllMessagesResponse) => {
         if (allMessageInRoom) {
             const allMessage = allMessageInRoom.allMessages
 
@@ -35,7 +35,7 @@ export const createChatMessage = () => {
         }).appendTo($('.message'))
     })
 
-    socket.on(sockets.image, (image: ImageMessage) => {
+    socket.on(Sockets.Image, (image: ImageMessage) => {
         const images = $('<img>', {
             class: 'image',
             clientUUID: image.userUUID,
@@ -50,7 +50,7 @@ export const createChatMessage = () => {
         windowMessage.scrollTop(windowMessage?.get(0)?.scrollHeight!)
     })
 
-    socket.on(sockets.message, (message: TextMessage) => {
+    socket.on(Sockets.Message, (message: TextMessage) => {
         const sendMsg = addMessage(message)
 
         if (socket.id === message.userUUID) {
@@ -78,7 +78,7 @@ export const createChatMessage = () => {
 
         allMessages = allMessages.concat(dataMessage)
 
-        socket.emit(sockets.chatMessage, dataMessage, allMessages)
+        socket.emit(Sockets.ChatMessage, dataMessage, allMessages)
 
         inputText.val('')
         inputText.focus()
@@ -120,7 +120,7 @@ export const createChatMessage = () => {
 
                         allMessages = allMessages.concat(dataMessage)
 
-                        socket.emit(sockets.sendImage, dataMessage, allMessages)
+                        socket.emit(Sockets.SendImage, dataMessage, allMessages)
                     }
 
                     imageInput.val('')
@@ -149,7 +149,7 @@ export const createChatMessage = () => {
 
                     allMessages = allMessages.concat(dataMessage)
 
-                    socket.emit(sockets.sendImage, dataMessage, allMessages)
+                    socket.emit(Sockets.SendImage, dataMessage, allMessages)
                 }
             }
         })

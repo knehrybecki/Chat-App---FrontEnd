@@ -24,11 +24,11 @@ export interface GetAllMessagesResponse {
     allMessages: Array<ImageMessage | TextMessage>
 }
 
-export enum sockets {
-    roomMessage = 'roomMessage',
-    image = 'image',
-    message = 'message',
-    chatMessage = 'chatMessage',
-    sendImage = 'sendImage',
-    userData= 'userData'
+export enum Sockets {
+    RoomMessage = 'roomMessage',
+    Image = 'image',
+    Message = 'message',
+    ChatMessage = 'chatMessage',
+    SendImage = 'sendImage',
+    UserData= 'userData'
 }

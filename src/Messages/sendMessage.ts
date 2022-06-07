@@ -1,5 +1,5 @@
 import $ from 'jquery'
-import { TextMessage } from '../types'
+import { TextMessage } from 'types'
 
 export const addMessage = (message: TextMessage) => {
     const textUser = $('<p>', {
