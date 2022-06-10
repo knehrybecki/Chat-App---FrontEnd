@@ -1,7 +1,7 @@
-import { socket } from 'app'
-import { createChatMessage } from 'chat'
+import { socket } from '../app'
+import { createChatMessage } from '../chat'
 import $ from 'jquery'
-import { Sockets } from 'types'
+import { Sockets } from '../types'
 
 export const createJoinUserToChat = () => {
     $('.join__button').click(event => {

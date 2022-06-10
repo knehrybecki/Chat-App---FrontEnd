@@ -1,14 +1,14 @@
-import { socket } from 'app'
+import { socket } from '../app'
 import { format } from 'date-fns'
 import $ from 'jquery'
-import { addMessage, addMessagesToRoom } from 'messages'
+import { addMessage, addMessagesToRoom } from '../messages'
 import {
     GetAllMessagesResponse,
     ImageMessage,
     MessageType,
     Sockets,
     TextMessage
-} from 'types'
+} from '../types'
 
 let allMessages: Array<ImageMessage | TextMessage> = []
 export const hours = format(new Date(), 'HH:mm')
