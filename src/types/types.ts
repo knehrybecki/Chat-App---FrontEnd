@@ -23,7 +23,6 @@ export interface ImageMessage extends Message {
 export interface GetAllMessagesResponse {
     allMessages: Array<ImageMessage | TextMessage>
 }
-
 export enum Sockets {
     RoomMessage = 'roomMessage',
     Image = 'image',

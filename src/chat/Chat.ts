@@ -1,6 +1,6 @@
-import { socket } from '../app'
 import { format } from 'date-fns'
 import $ from 'jquery'
+import { socket } from '../app'
 import { addMessage, addMessagesToRoom } from '../messages'
 import {
     GetAllMessagesResponse,
@@ -10,7 +10,7 @@ import {
     TextMessage
 } from '../types'
 
-let allMessages: Array<ImageMessage | TextMessage> = []
+let allMessagesArray: Array<ImageMessage | TextMessage> = []
 export const hours = format(new Date(), 'HH:mm')
 
 export const createChatMessage = () => {
@@ -19,9 +19,9 @@ export const createChatMessage = () => {
 
     socket.on(Sockets.RoomMessage, (roomMessage: string, allMessageInRoom: GetAllMessagesResponse) => {
         if (allMessageInRoom) {
-            const allMessage = allMessageInRoom.allMessages
+            const { allMessages } = allMessageInRoom
 
-            allMessages = allMessages.concat(allMessage)
+            allMessagesArray = allMessagesArray.concat(allMessages)
 
             addMessagesToRoom(allMessages)
 
@@ -50,10 +50,10 @@ export const createChatMessage = () => {
     })
 
     socket.on(Sockets.Message, (message: TextMessage) => {
-        const sendMsg = addMessage(message)
+        const sentMessage = addMessage(message)
 
         if (socket.id === message.userUUID) {
-            sendMsg.addClass('myMessage')
+            sentMessage.addClass('myMessage')
         }
 
         windowMessage.scrollTop(windowMessage?.get(0)?.scrollHeight!)
@@ -75,9 +75,9 @@ export const createChatMessage = () => {
             type: MessageType.Text,
         }
 
-        allMessages = allMessages.concat(dataMessage)
+        allMessagesArray = allMessagesArray.concat(dataMessage)
 
-        socket.emit(Sockets.ChatMessage, dataMessage, allMessages)
+        socket.emit(Sockets.ChatMessage, dataMessage, allMessagesArray)
 
         inputText.val('')
         inputText.focus()
@@ -117,9 +117,9 @@ export const createChatMessage = () => {
                             type: MessageType.Image,
                         }
 
-                        allMessages = allMessages.concat(dataMessage)
+                        allMessagesArray = allMessagesArray.concat(dataMessage)
 
-                        socket.emit(Sockets.SendImage, dataMessage, allMessages)
+                        socket.emit(Sockets.SendImage, dataMessage, allMessagesArray)
                     }
 
                     imageInput.val('')
@@ -146,9 +146,9 @@ export const createChatMessage = () => {
                         type: MessageType.Image,
                     }
 
-                    allMessages = allMessages.concat(dataMessage)
+                    allMessagesArray = allMessagesArray.concat(dataMessage)
 
-                    socket.emit(Sockets.SendImage, dataMessage, allMessages)
+                    socket.emit(Sockets.SendImage, dataMessage, allMessagesArray)
                 }
             }
         })

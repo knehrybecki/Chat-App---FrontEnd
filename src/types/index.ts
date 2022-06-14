@@ -6,7 +6,5 @@ export {
 export type {
     GetAllMessagesResponse,
     ImageMessage,
-     TextMessage
+    TextMessage
 } from './types'
-
-
