@@ -1,7 +1,7 @@
 import { format } from 'date-fns'
 import $ from 'jquery'
 import { socket } from '../app'
-import { addMessage, addMessagesToRoom } from '../messages'
+import { addMessage, addMessagesToRoom, errorHandling } from '../messages'
 import {
     GetAllMessagesResponse,
     ImageMessage,
@@ -49,8 +49,9 @@ export const createChatMessage = () => {
         windowMessage.scrollTop(windowMessage?.get(0)?.scrollHeight!)
     })
 
-    socket.on(Sockets.Message, (message: TextMessage) => {
+    socket.on(Sockets.Message, (message: TextMessage ) => {
         const sentMessage = addMessage(message)
+
 
         if (socket.id === message.userUUID) {
             sentMessage.addClass('myMessage')
@@ -154,6 +155,7 @@ export const createChatMessage = () => {
         })
     }
     sendImage()
+    errorHandling()
 }
 
 window.addEventListener('DOMContentLoaded', () => {
