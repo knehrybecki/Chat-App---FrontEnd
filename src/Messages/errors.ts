@@ -4,7 +4,7 @@ import { socket } from '../app'
 import { Sockets } from '../types'
 
 export const errorHandling  = () => {
-    socket.on(Sockets.Errors, (error) => {
+    socket.on(Sockets.Errors, error => {
         Swal.fire({
             title: 'Error!',
             text: `Something went wrong ${error}`,
