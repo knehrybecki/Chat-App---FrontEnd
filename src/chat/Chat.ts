@@ -34,26 +34,26 @@ export const createChatMessage = () => {
         }).appendTo($('.message'))
     })
 
-    socket.on(Sockets.Image, (image: ImageMessage) => {
+    socket.on(Sockets.Image, (socketMessage: ImageMessage) => {
         const images = $('<img>', {
             class: 'image',
-            clientUUID: image.userUUID,
-            src: image.imageUrl,
+            clientUUID: socketMessage.userUUID,
+            src: socketMessage.imageUrl,
             alt: 'img',
         }).appendTo($('.message'))
 
-        if (socket.id === image.userUUID) {
+        if (socket.id === socketMessage.userUUID) {
             images.addClass('myMessage')
         }
 
         windowMessage.scrollTop(windowMessage?.get(0)?.scrollHeight!)
     })
 
-    socket.on(Sockets.Message, (message: TextMessage ) => {
-        const sentMessage = addMessage(message)
+    socket.on(Sockets.Message, (socketMessage: TextMessage ) => {
+        const sentMessage = addMessage(socketMessage)
 
 
-        if (socket.id === message.userUUID) {
+        if (socket.id === socketMessage.userUUID) {
             sentMessage.addClass('myMessage')
         }
 
