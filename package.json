@@ -19,6 +19,7 @@
     "jquery": "^3.6.0",
     "moment": "^2.29.3",
     "socket.io": "^4.5.1",
-    "socket.io-client": "^4.5.1"
+    "socket.io-client": "^4.5.1",
+    "sweetalert2": "^11.4.17"
   }
 }
